@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swipe_detector/flutter_swipe_detector.dart';
+import 'package:num_play/const/app_colors.dart';
 
 import 'components/button.dart';
 import 'components/empy_board.dart';
@@ -8,6 +10,7 @@ import 'components/score_board.dart';
 import 'components/tile_board.dart';
 import 'const/colors.dart';
 import 'managers/board.dart';
+import 'models/sound.dart';
 
 class Game extends ConsumerStatefulWidget {
   const Game({super.key});
@@ -18,6 +21,10 @@ class Game extends ConsumerStatefulWidget {
 
 class _GameState extends ConsumerState<Game>
     with TickerProviderStateMixin, WidgetsBindingObserver {
+  final  guide='Use the arrow keys (Up, Down, Left, Right) or your mouse to swipe and combine matching tiles. Merge tiles with the same number to reach higher scores!';
+ //sounds testing:
+
+
   //The contoller used to move the the tiles
   late final AnimationController _moveController = AnimationController(
     duration: const Duration(milliseconds: 100),
@@ -70,83 +77,182 @@ class _GameState extends ConsumerState<Game>
       onKey: (RawKeyEvent event) {
         //Move the tile with the arrows on the keyboard on Desktop
         if (ref.read(boardManager.notifier).onKey(event)) {
+          // Play move sound when tiles move
+          playSound(ref: ref, soundPath: 'sounds/merge.wav');
           _moveController.forward(from: 0.0);
         }
       },
       child: SwipeDetector(
         onSwipe: (direction, offset) {
           if (ref.read(boardManager.notifier).move(direction)) {
+            // Play move sound when tiles move
+            playSound(ref: ref, soundPath:'sounds/move.mp3');
             _moveController.forward(from: 0.0);
           }
         },
         child: Scaffold(
-          backgroundColor: backgroundColor,
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '2048',
-                      style: TextStyle(
-                          color: textColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 52.0),
-                    ),
-                    Column(
+          // backgroundColor: backgroundColor,
+          body:  SingleChildScrollView(
+
+            child: Container(
+              height: MediaQuery.of(context).size.height, // Ensures full height
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                      "assets/images/bg_img.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const ScoreBoard(),
-                        const SizedBox(
-                          height: 32.0,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Num',
+                                    style: TextStyle(
+                                      color: Colors.white, // First color
+                                      fontWeight: FontWeight.bold,
+                                      fontStyle: FontStyle.italic,
+
+                                      fontSize: 52.0,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Play',
+                                    style: TextStyle(
+                                      color: Colors.yellow, // Second color
+                                      fontWeight: FontWeight.bold,
+                                      fontStyle: FontStyle.italic,
+
+                                      fontSize: 52.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            Text("2048",style: TextStyle(
+                              color: AppColors.blue,
+                              fontSize: 60.0,
+                              fontWeight: FontWeight.bold,
+                            ),),
+
+                          ],
                         ),
+                        const ScoreBoard(),
                         Row(
                           children: [
-                            ButtonWidget(
-                              icon: Icons.undo,
-                              onPressed: () {
-                                //Undo the round.
-                                ref.read(boardManager.notifier).undo();
-                              },
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ButtonWidget(
+                                  icon: Icons.undo,
+                                  onPressed: () {
+                                    //Undo the round.
+                                    ref.read(boardManager.notifier).undo();
+                                  },
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "BACK",
+                                    style: TextStyle(
+                                        color: AppColors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                              ],
                             ),
                             const SizedBox(
                               width: 16.0,
                             ),
-                            ButtonWidget(
-                              icon: Icons.refresh,
-                              onPressed: () {
-                                //Restart the game
-                                ref.read(boardManager.notifier).newGame();
-                              },
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ButtonWidget(
+                                  icon: Icons.refresh,
+                                  onPressed: () {
+                                    //Restart the game
+                                    ref.read(boardManager.notifier).newGame();
+                                  },
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "RESTART",
+                                    style: TextStyle(
+                                        color: AppColors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                              ],
                             )
                           ],
                         )
                       ],
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 32.0,
-              ),
-              Stack(
-                children: [
-                  const EmptyBoardWidget(),
-                  TileBoardWidget(
-                      moveAnimation: _moveAnimation,
-                      scaleAnimation: _scaleAnimation)
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 24.0,
+                  ),
+                  Stack(
+                    children: [
+                      const EmptyBoardWidget(),
+                      TileBoardWidget(
+                          moveAnimation: _moveAnimation,
+                          scaleAnimation: _scaleAnimation)
+                    ],
+                  ),
+                  SizedBox(height: 16,),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0,),
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Guide: ', // The word "Guide" with a blue color
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: guide,
+                              style: TextStyle(
+                                color: AppColors.white,
+                                fontSize: 16.0,
+
+
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+
                 ],
-              )
-            ],
+              ),
+            ),
           ),
-        ),
       ),
-    );
+    ));
   }
 
   @override

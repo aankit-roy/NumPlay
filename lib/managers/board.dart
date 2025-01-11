@@ -5,6 +5,7 @@ import 'package:flutter_swipe_detector/flutter_swipe_detector.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../models/sound.dart';
 import '../models/tile.dart';
 import '../models/board.dart';
 
@@ -12,11 +13,13 @@ import 'next_direction.dart';
 import 'round.dart';
 
 class BoardManager extends StateNotifier<Board> {
+
   // We will use this list to retrieve the right index when user swipes up/down
   // which will allow us to reuse most of the logic.
   final verticalOrder = [12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3];
 
   final StateNotifierProviderRef ref;
+  // final Ref ref; // Change StateNotifierProviderRef to WidgetRef
   BoardManager(this.ref) : super(Board.newGame(0, [])) {
     //Load the last saved state or start a new game.
     load();
@@ -56,18 +59,7 @@ class BoardManager extends StateNotifier<Board> {
         direction == SwipeDirection.left || direction == SwipeDirection.up;
     bool vert =
         direction == SwipeDirection.up || direction == SwipeDirection.down;
-    // Get the first index from the left in the row
-    // Example: for left swipe that can be: 0, 4, 8, 12
-    // for right swipe that can be: 3, 7, 11, 15
-    // depending which row in the column in the board we need
-    // let's say the title.index = 6 (which is the 3rd tile from the left and 2nd from right side, in the second row)
-    // ceil means it will ALWAYS round up to the next largest integer
-    // NOTE: don't confuse ceil it with floor or round as even if the value is 2.1 output would be 3.
-    // ((6 + 1) / 4) = 1.75
-    // Ceil(1.75) = 2
-    // If it's ascending: 2 * 4 – 4 = 4, which is the first index from the left side in the second row
-    // If it's descending: 2 * 4 – 1 = 7, which is the last index from the left side and first index from the right side in the second row
-    // If user swipes vertically use the verticalOrder list to retrieve the up/down index else use the existing index
+
     int index = vert ? verticalOrder[tile.index] : tile.index;
     int nextIndex = ((index + 1) / 4).ceil() * 4 - (asc ? 4 : 1);
 
@@ -85,8 +77,7 @@ class BoardManager extends StateNotifier<Board> {
       }
     }
 
-    // Return immutable copy of the current tile with the new next index
-    // which can either be the top left index in the row or the last tile nextIndex/index + 1
+
     return tile.copyWith(
         nextIndex: vert ? verticalOrder.indexOf(nextIndex) : nextIndex);
   }
@@ -133,6 +124,8 @@ class BoardManager extends StateNotifier<Board> {
 
     // Assign immutable copy of the new board state and trigger rebuild.
     state = state.copyWith(tiles: tiles, undo: state);
+    // playSound(ref: ref, soundPath: "sounds/merge.wav"); // Play undo sound
+
     return true;
   }
 
@@ -188,6 +181,7 @@ class BoardManager extends StateNotifier<Board> {
       tiles.add(random(indexes));
     }
     state = state.copyWith(score: score, tiles: tiles);
+    // playSound(ref: ref, soundPath: "sounds/merge.wav"); // Play merge sound
   }
 
   //Finish round, win or loose the game.
@@ -270,6 +264,8 @@ class BoardManager extends StateNotifier<Board> {
     if (nextDirection != null) {
       move(nextDirection);
       ref.read(nextDirectionManager.notifier).clear();
+      // playSound(ref: ref, soundPath: "sounds/merge.wav");
+
       return true;
     }
     return false;
@@ -282,6 +278,7 @@ class BoardManager extends StateNotifier<Board> {
           score: state.undo!.score,
           best: state.undo!.best,
           tiles: state.undo!.tiles);
+      // playSound(ref: ref, soundPath: "sounds/merge.wav"); // Play undo sound
     }
   }
 

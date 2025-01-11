@@ -113,6 +113,7 @@ class AppTheme {
           buttonColor: AppColors.accent
         // textTheme: ButtonTextTheme.primary,
       ),
+      fontFamily: 'Rye',
 
 
       // titleTextStyle: TextStyle(

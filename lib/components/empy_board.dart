@@ -22,7 +22,14 @@ class EmptyBoardWidget extends StatelessWidget {
       width: boardSize,
       height: boardSize,
       decoration: BoxDecoration(
-          color: boardColor, borderRadius: BorderRadius.circular(6.0)),
+        color: emptyTileColor,
+          image: const DecorationImage(
+
+            image: AssetImage("assets/images/bg_img.png"), // Path to your image
+            fit: BoxFit.cover, // Ensure the image covers the button area
+          ),
+
+          borderRadius: BorderRadius.circular(6.0)),
       child: Stack(
         children: List.generate(16, (i) {
           //Render the empty board in 4x4 GridView

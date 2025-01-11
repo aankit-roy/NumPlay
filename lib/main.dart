@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'NumPlay',
           theme: AppTheme.lightTheme(context),
+
           // Light theme
           darkTheme: AppTheme.darkTheme(context),
           // Dark theme
