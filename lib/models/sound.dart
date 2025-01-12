@@ -17,12 +17,16 @@ Future<void> playSound(
   }
 }
 
-// Future<void> playSound(
-//     {required StateNotifierProviderRef ref, required String soundPath}) async {
-//   final isMuted = ref.read(soundProvider);  // Access the sound provider
-//   if (!isMuted) {
-//     final audioPlayer = ref.read(audioPlayerProvider);  // Access the audio player provider
-//
-//     await audioPlayer.play(AssetSource(soundPath));  // Play the sound
-//   }
-// }
+Future<void> playBackgroundMusic(  {required WidgetRef ref, required String soundPath}) async {
+  final isMuted = ref.read(soundProvider);
+  final audioPlayer = ref.read(audioPlayerProvider);
+  if (!isMuted) {
+
+    await audioPlayer.setReleaseMode(ReleaseMode.loop); // Loop the music
+    await audioPlayer.setVolume(0.3); // Set volume to a low level
+    await audioPlayer.play(AssetSource('sounds/bg_music.mp3'));
+  } else {
+    await audioPlayer.stop(); // Stop music when muted
+  }
+}
+

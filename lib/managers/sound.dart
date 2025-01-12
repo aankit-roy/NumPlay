@@ -7,7 +7,13 @@ class SoundNotifier extends StateNotifier<bool> {
 
   // Toggle mute state
   void toggleMute() => state = !state;
+
+
+
 }
+
+
+
 
 // Provider for sound state
 final soundProvider = StateNotifierProvider<SoundNotifier, bool>((ref) {
@@ -19,20 +25,4 @@ final audioPlayerProvider = Provider<AudioPlayer>((ref) {
   return AudioPlayer();
 });
 
-// // StateNotifier to handle audio logic
-// class SoundNotifier extends StateNotifier<bool> {
-//   SoundNotifier() : super(false); // Default: sound unmuted
-//
-//   // Toggle mute state
-//   void toggleMute() => state = !state;
-// }
-//
-// // Provider for sound state
-// final soundProvider = StateNotifierProvider<SoundNotifier, bool>((ref) {
-//   return SoundNotifier();
-// });
-//
-// // AudioCache instance provider for short sound effects
-// final audioCacheProvider = Provider<AudioCache>((ref) {
-//   return AudioCache(); // This will handle caching and playing short sounds
-// });
+
