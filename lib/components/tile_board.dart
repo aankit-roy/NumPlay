@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../const/app_colors.dart';
 import '../const/colors.dart';
 import '../managers/board.dart';
 
@@ -56,7 +57,7 @@ class TileBoardWidget extends ConsumerWidget {
                   '${tile.value}',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 24.0,
+                      fontSize: 30.0,
                       color: tile.value < 8 ? textColor : textColorWhite),
                 )),
               ),
@@ -72,7 +73,7 @@ class TileBoardWidget extends ConsumerWidget {
                   Text(
                     board.won ? 'You win!' : 'Game over!',
                     style: const TextStyle(
-                        color: textColor,
+                        color: Colors.yellow,
                         fontWeight: FontWeight.bold,
                         fontSize: 64.0),
                   ),
