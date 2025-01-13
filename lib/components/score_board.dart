@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../const/colors.dart';
 import '../managers/board.dart';
@@ -16,8 +17,8 @@ class ScoreBoard extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Score(label: 'Score', score: '$score'),
-        const SizedBox(
-          width: 8.0,
+         SizedBox(
+          width: 2.sp,
         ),
         Score(
             label: 'Best',
@@ -56,12 +57,12 @@ class Score extends StatelessWidget {
       child: Column(children: [
         Text(
           label.toUpperCase(),
-          style:  const TextStyle(fontSize: 30.0, color: textColorWhite,fontWeight: FontWeight.w800),
+          style:   TextStyle(fontSize: 8.sp, color: textColorWhite,fontWeight: FontWeight.w800),
         ),
         Text(
           score,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 26.0),
+          style:   TextStyle(
+              color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 8.sp),
         )
       ]),
     );

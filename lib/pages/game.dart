@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,13 +7,14 @@ import 'package:flutter_swipe_detector/flutter_swipe_detector.dart';
 import 'package:num_play/const/app_colors.dart';
 import 'package:num_play/managers/sound.dart';
 
-import 'components/button.dart';
-import 'components/empy_board.dart';
-import 'components/score_board.dart';
-import 'components/tile_board.dart';
-import 'const/colors.dart';
-import 'managers/board.dart';
-import 'models/sound.dart';
+import '../components/button.dart';
+import '../components/empy_board.dart';
+import '../components/score_board.dart';
+import '../components/tile_board.dart';
+import '../const/colors.dart';
+import '../managers/board.dart';
+import '../models/sound.dart';
+
 
 
 class Game extends ConsumerStatefulWidget {
@@ -59,10 +62,8 @@ class _GameState extends ConsumerState<Game>
 
   @override
   void initState() {
-
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-
 
     // Start playing background music
     // playBackgroundMusic(ref: ref, soundPath: 'sounds/bg_music.mp3');
@@ -87,122 +88,128 @@ class _GameState extends ConsumerState<Game>
           }
         },
         child: Scaffold(
-          body: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/bg_img.png"),
-                fit: BoxFit.cover,
+          body: Stack(
+            children: [
+              // Background Image
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/bg_img.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-            ),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
+
+              // Main Game Layout
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+
+                          ),
+                          child: IntrinsicHeight(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // const SizedBox(height: 100.0),
+                                const ScoreBoard(),
+                                SizedBox(height: 16,),
+                                Stack(
+                                  children: [
+                                    const EmptyBoardWidget(),
+                                    TileBoardWidget(
+                                      moveAnimation: _moveAnimation,
+                                      scaleAnimation: _scaleAnimation,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16.0),
+                                Padding(
+                                  padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: 'Guide: ',
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: guide,
+                                          style: TextStyle(
+                                            color: AppColors.white,
+                                            fontSize: 16.0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                  );
+                },
+              ),
+
+              // Transparent Blur Navigation Bar
+              Positioned(
+                top: 10,
+                left: 10,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Game Title
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.sp),
-                            child: TopNavBar(),
+                          Text(
+                            'NumPlay',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
+                            ),
                           ),
-                          const SizedBox(height: 24.0),
-                          Stack(
-                            children: [
-                              const EmptyBoardWidget(),
-                              TileBoardWidget(
-                                moveAnimation: _moveAnimation,
-                                scaleAnimation: _scaleAnimation,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16.0),
-                       
-                          const SizedBox(height: 16.0),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Guide: ',
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: guide,
-                                    style: TextStyle(
-                                      color: AppColors.white,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                          Text(
+                            '2048 Challenge',
+                            style: TextStyle(
+                              color: Colors.yellow,
+                              fontSize: 12.sp,
                             ),
                           ),
                         ],
                       ),
-                    ),
+                      // Navigation Bar Buttons
+
+                      topButtons()
+
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
-
-  Row TopNavBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Num',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      fontSize: 52.0,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'Play',
-                    style: TextStyle(
-                      color: Colors.yellow,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      fontSize: 52.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Text(
-              "2048",
-              style: TextStyle(
-                color: AppColors.blue,
-                fontSize: 60.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const ScoreBoard(),
-        topButtons(),
-      ],
     );
   }
 
@@ -230,7 +237,7 @@ class _GameState extends ConsumerState<Game>
             ),
           ],
         ),
-        const SizedBox(width: 16.0),
+         SizedBox(width: 1.sp),
         Column(
           children: [
             ButtonWidget(
@@ -252,7 +259,7 @@ class _GameState extends ConsumerState<Game>
             ),
           ],
         ),
-        const SizedBox(width: 16.0),
+        SizedBox(width: 1.sp),
         Column(
           children: [
             Consumer(
@@ -287,27 +294,27 @@ class _GameState extends ConsumerState<Game>
           ],
         )
 
-        // Column(
-        //   children: [
-        //     ButtonWidget(
-        //       icon: Icons.volume_up,
-        //       onPressed: () {
-        //         // ref.read(boardManager.notifier).newGame();
-        //       },
-        //     ),
-        //     const Padding(
-        //       padding: EdgeInsets.all(8.0),
-        //       child: Text(
-        //         "SOUND",
-        //         style: TextStyle(
-        //           color: AppColors.white,
-        //           fontSize: 16,
-        //           fontWeight: FontWeight.bold,
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // ),
+//         // Column(
+//         //   children: [
+//         //     ButtonWidget(
+//         //       icon: Icons.volume_up,
+//         //       onPressed: () {
+//         //         // ref.read(boardManager.notifier).newGame();
+//         //       },
+//         //     ),
+//         //     const Padding(
+//         //       padding: EdgeInsets.all(8.0),
+//         //       child: Text(
+//         //         "SOUND",
+//         //         style: TextStyle(
+//         //           color: AppColors.white,
+//         //           fontSize: 16,
+//         //           fontWeight: FontWeight.bold,
+//         //         ),
+//         //       ),
+//         //     ),
+//         //   ],
+//         // ),
       ],
     );
   }
@@ -323,14 +330,13 @@ class _GameState extends ConsumerState<Game>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+
     _moveAnimation.dispose();
     _scaleAnimation.dispose();
     _moveController.dispose();
     _scaleController.dispose();
     // Stop background music when leaving the game
-    // ref.read(audioPlayerProvider).stop();
-
-
+    ref.read(audioPlayerProvider).stop();
     super.dispose();
   }
 }

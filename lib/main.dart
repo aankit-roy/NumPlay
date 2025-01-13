@@ -3,11 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:num_play/pages/landing_page.dart';
 
 import 'const/app_theme.dart';
 import 'models/board_adapter.dart';
 
-import 'game.dart';
+import 'pages/game.dart';
 
 void main() async {
   //Allow only portrait mode on Android & iOS
@@ -43,9 +44,7 @@ class MyApp extends StatelessWidget {
           // Dark theme
           themeMode: ThemeMode.light,
           home: const Game(),
-          // home: const HomeScreen() // Replace with your homepage widget
-          // home: const DiscoverBookScreen(),
-          // home: const SearchBarScreen(),
+          // home: LandingPage(),
         );
       },
     );
